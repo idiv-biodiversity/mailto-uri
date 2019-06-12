@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setuptools.setup(
     name = "mailto-uri",
-    version = "1.1.0",
+    version = "1.2.0",
     author = "Christian Krause",
     author_email = "christian.krause@idiv.de",
     description = "create mailto URIs",
