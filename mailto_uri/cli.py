@@ -22,11 +22,20 @@ import frontmatter
 import sys
 import urllib.parse
 
-def mailto(content, recipient, subject):
+def mailto(subject, recipients, content):
     content = urllib.parse.quote(content)
     subject = urllib.parse.quote(subject)
 
-    print('mailto:{}?subject={}&body={}'.format(recipient, subject, content))
+    if recipients:
+        recipients = ','.join(recipients)
+    else:
+        recipients = ''
+
+    print('mailto:{}?subject={}&body={}'.format(
+        recipients,
+        subject,
+        content
+    ))
 
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -42,6 +51,7 @@ def create_parser():
 
     parser.add_argument(
         '-r', '--recipient',
+        action = 'append',
         help = 'primary, main recipients',
     )
 
@@ -75,12 +85,14 @@ def main():
         mail = frontmatter.loads(raw)
 
         if args.recipient:
-            recipient = args.recipient
+            recipients = args.recipient
         elif 'recipient' in mail:
-            recipient = mail['recipient']
+            recipients = mail['recipient']
         else:
-            print("mailto-uri: no recipient given", file = sys.stderr)
-            exit(1)
+            recipients = []
+
+        if not isinstance(recipients, (list,)):
+            recipients = [recipients]
 
         if args.subject:
             subject = args.subject
@@ -90,4 +102,4 @@ def main():
             print("mailto-uri: no subject given", file = sys.stderr)
             exit(1)
 
-        mailto(mail.content, recipient, subject)
+        mailto(subject, recipients, mail.content)

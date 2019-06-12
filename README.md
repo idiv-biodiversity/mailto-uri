@@ -53,8 +53,8 @@ matter** for recipient and subject:
 
 ```md
 ---
-recipient: admin@example.com
 subject: increase quota
+recipient: admin@example.com
 ---
 
 Dear Admin,
