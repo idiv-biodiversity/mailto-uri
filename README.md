@@ -72,6 +72,13 @@ $ mailto-uri increase-quota.md
 mailto:admin@example.com?subject=increase%20quota&body=Dear%20Admin%2C%0A%0APlease%20increase%20my%20quota%21%0A%0ABest%20Regards
 ```
 
+You can also use it in pipes:
+
+```console
+$ generate-template | mailto-uri
+mailto:...
+```
+
 installation
 ------------
 

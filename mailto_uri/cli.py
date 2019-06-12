@@ -22,6 +22,12 @@ import frontmatter
 import sys
 import urllib.parse
 
+def mailto(content, recipient, subject):
+    content = urllib.parse.quote(content)
+    subject = urllib.parse.quote(subject)
+
+    print('mailto:{}?subject={}&body={}'.format(recipient, subject, content))
+
 def main():
 
     # -------------------------------------------------------------------------
@@ -30,8 +36,10 @@ def main():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('body',
-                        help = 'mail body input file')
+    parser.add_argument('input',
+                        nargs = '*',
+                        help = 'mail body input file, can also include '
+                               'recipient and subject via front matter')
 
     parser.add_argument('-r', '--recipient',
                         help = 'mail recipient')
@@ -45,38 +53,38 @@ def main():
     # app
     # -------------------------------------------------------------------------
 
-    if args.body and args.body != '-':
-        input = open(args.body)
+    if args.input:
+        sources = args.input
     else:
-        input = sys.stdin
+        sources = ['-']
 
-    raw = bytes(input.read(), input.encoding)
+    for source in sources:
+        if source == '-':
+            source = sys.stdin
+        else:
+            source = open(source)
 
-    if args.body and args.body != '-':
-        input.close()
+        raw = bytes(source.read(), source.encoding)
 
-    mail = frontmatter.loads(raw)
+        if source != '-':
+            source.close()
 
-    body = urllib.parse.quote(mail.content)
+        mail = frontmatter.loads(raw)
 
-    if args.recipient:
-        recipient = args.recipient
-    elif 'recipient' in mail:
-        recipient = mail['recipient']
-    else:
-        print("mailto-uri: no recipient given", file = sys.stderr)
-        exit(1)
+        if args.recipient:
+            recipient = args.recipient
+        elif 'recipient' in mail:
+            recipient = mail['recipient']
+        else:
+            print("mailto-uri: no recipient given", file = sys.stderr)
+            exit(1)
 
-    if args.subject:
-        subject = urllib.parse.quote(args.subject)
-    elif 'subject' in mail:
-        subject = urllib.parse.quote(mail['subject'])
-    else:
-        print("mailto-uri: no subject given", file = sys.stderr)
-        exit(1)
+        if args.subject:
+            subject = args.subject
+        elif 'subject' in mail:
+            subject = mail['subject']
+        else:
+            print("mailto-uri: no subject given", file = sys.stderr)
+            exit(1)
 
-    # -------------------------------------------------------------------------
-    # output
-    # -------------------------------------------------------------------------
-
-    print('mailto:{}?subject={}&body={}'.format(recipient, subject, body))
+        mailto(mail.content, recipient, subject)
