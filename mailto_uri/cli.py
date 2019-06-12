@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
 # mailto-uri - creates mailto URIs
 #
-# Copyright (C) 2018 Christian Krause
+# Copyright (C) 2018-2019 Christian Krause
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
