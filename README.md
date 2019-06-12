@@ -55,6 +55,9 @@ matter** for recipient and subject:
 ---
 subject: increase quota
 recipient: admin@example.com
+cc:
+  - support@example.com
+  - someone@example.com
 ---
 
 Dear Admin,
@@ -69,7 +72,7 @@ used.
 
 ```console
 $ mailto-uri increase-quota.md
-mailto:admin@example.com?subject=increase%20quota&body=Dear%20Admin%2C%0A%0APlease%20increase%20my%20quota%21%0A%0ABest%20Regards
+mailto:admin@example.com?subject=increase%20quota&cc=support@example.com,someone@example.com&body=Dear%20Admin%2C%0A%0APlease%20increase%20my%20quota%21%0A%0ABest%20Regards
 ```
 
 You can also use it in pipes:

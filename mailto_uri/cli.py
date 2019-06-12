@@ -22,7 +22,7 @@ import frontmatter
 import sys
 import urllib.parse
 
-def mailto(subject, recipients, content):
+def mailto(subject, recipients, cc, content):
     content = urllib.parse.quote(content)
     subject = urllib.parse.quote(subject)
 
@@ -31,10 +31,17 @@ def mailto(subject, recipients, content):
     else:
         recipients = ''
 
-    print('mailto:{}?subject={}&body={}'.format(
+    if cc:
+        cc = ','.join(cc)
+        cc = '&cc={}'.format(cc)
+    else:
+        cc = ''
+
+    print('mailto:{}?subject={}{}&body={}'.format(
         recipients,
         subject,
-        content
+        cc,
+        content,
     ))
 
 def create_parser():
@@ -47,6 +54,12 @@ def create_parser():
         nargs = '*',
         help = 'mail body input file, can include optional arguments in front '
                'matter',
+    )
+
+    parser.add_argument(
+        '-c', '--cc',
+        action = 'append',
+        help = 'secondary, carbon copy recipients',
     )
 
     parser.add_argument(
@@ -94,6 +107,16 @@ def main():
         if not isinstance(recipients, (list,)):
             recipients = [recipients]
 
+        if args.cc:
+            cc = args.cc
+        elif 'cc' in mail:
+            cc = mail['cc']
+        else:
+            cc = []
+
+        if not isinstance(cc, (list,)):
+            cc = [cc]
+
         if args.subject:
             subject = args.subject
         elif 'subject' in mail:
@@ -102,4 +125,4 @@ def main():
             print("mailto-uri: no subject given", file = sys.stderr)
             exit(1)
 
-        mailto(subject, recipients, mail.content)
+        mailto(subject, recipients, cc, mail.content)
