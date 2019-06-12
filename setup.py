@@ -16,11 +16,11 @@ setuptools.setup(
         'argparse',
         'python-frontmatter'
     ],
-    classifiers = (
+    classifiers = [
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
-    ),
+    ],
     packages = setuptools.find_packages(),
     entry_points = {
         'console_scripts': [
