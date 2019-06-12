@@ -54,7 +54,7 @@ matter** for recipient and subject:
 ```md
 ---
 subject: increase quota
-recipient: admin@example.com
+to: admin@example.com
 cc:
   - support@example.com
   - someone@example.com

@@ -99,6 +99,8 @@ def main():
 
         if args.recipient:
             recipients = args.recipient
+        elif 'to' in mail:
+            recipients = mail['to']
         elif 'recipient' in mail:
             recipients = mail['recipient']
         else:
