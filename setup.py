@@ -14,6 +14,7 @@ setuptools.setup(
     url = "https://github.com/idiv-biodiversity/mailto-uri",
     install_requires = [
         'argparse',
+        'python-frontmatter'
     ],
     classifiers = (
         "Programming Language :: Python :: 3",

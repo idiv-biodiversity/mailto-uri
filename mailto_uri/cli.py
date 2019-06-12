@@ -18,6 +18,7 @@
 # -----------------------------------------------------------------------------
 
 import argparse
+import frontmatter
 import sys
 import urllib.parse
 
@@ -32,10 +33,10 @@ def main():
     parser.add_argument('body',
                         help = 'mail body input file')
 
-    parser.add_argument('-r', '--recipient', required = True,
+    parser.add_argument('-r', '--recipient',
                         help = 'mail recipient')
 
-    parser.add_argument('-s', '--subject', required = True,
+    parser.add_argument('-s', '--subject',
                         help = 'mail subject')
 
     args = parser.parse_args()
@@ -49,17 +50,33 @@ def main():
     else:
         input = sys.stdin
 
-    data = bytes(input.read(), input.encoding)
+    raw = bytes(input.read(), input.encoding)
 
     if args.body and args.body != '-':
         input.close()
 
-    subject = urllib.parse.quote(args.subject)
+    mail = frontmatter.loads(raw)
 
-    body = urllib.parse.quote(data)
+    body = urllib.parse.quote(mail.content)
+
+    if args.recipient:
+        recipient = args.recipient
+    elif 'recipient' in mail:
+        recipient = mail['recipient']
+    else:
+        print("mailto-uri: no recipient given", file = sys.stderr)
+        exit(1)
+
+    if args.subject:
+        subject = urllib.parse.quote(args.subject)
+    elif 'subject' in mail:
+        subject = urllib.parse.quote(mail['subject'])
+    else:
+        print("mailto-uri: no subject given", file = sys.stderr)
+        exit(1)
 
     # -------------------------------------------------------------------------
     # output
     # -------------------------------------------------------------------------
 
-    print('mailto:{}?subject={}&body={}'.format(args.recipient, subject, body))
+    print('mailto:{}?subject={}&body={}'.format(recipient, subject, body))
