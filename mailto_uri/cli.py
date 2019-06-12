@@ -24,7 +24,12 @@ import urllib.parse
 
 def mailto(subject, recipients, cc, content):
     content = urllib.parse.quote(content)
-    subject = urllib.parse.quote(subject)
+
+    if subject:
+        subject = urllib.parse.quote(subject)
+        subject = '&subject={}'.format(subject)
+    else:
+        subject = ''
 
     if recipients:
         recipients = ','.join(recipients)
@@ -37,11 +42,11 @@ def mailto(subject, recipients, cc, content):
     else:
         cc = ''
 
-    print('mailto:{}?subject={}{}&body={}'.format(
+    print('mailto:{}?body={}{}{}'.format(
         recipients,
+        content,
         subject,
         cc,
-        content,
     ))
 
 def create_parser():
@@ -124,7 +129,6 @@ def main():
         elif 'subject' in mail:
             subject = mail['subject']
         else:
-            print("mailto-uri: no subject given", file = sys.stderr)
-            exit(1)
+            subject = ''
 
         mailto(subject, recipients, cc, mail.content)
