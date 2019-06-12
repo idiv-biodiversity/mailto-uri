@@ -31,10 +31,16 @@ def mailto(subject, recipients, cc, content):
     else:
         subject = ''
 
+    if not isinstance(recipients, (list,)):
+        recipients = [recipients]
+
     if recipients:
         recipients = ','.join(recipients)
     else:
         recipients = ''
+
+    if not isinstance(cc, (list,)):
+        cc = [cc]
 
     if cc:
         cc = ','.join(cc)
@@ -42,12 +48,12 @@ def mailto(subject, recipients, cc, content):
     else:
         cc = ''
 
-    print('mailto:{}?body={}{}{}'.format(
+    return 'mailto:{}?body={}{}{}'.format(
         recipients,
         content,
         subject,
         cc,
-    ))
+    )
 
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -80,6 +86,44 @@ def create_parser():
 
     return parser
 
+def run(source, args):
+    if source == '-':
+        source = sys.stdin
+    else:
+        source = open(source)
+
+    raw = bytes(source.read(), source.encoding)
+
+    if source != '-':
+        source.close()
+
+    mail = frontmatter.loads(raw)
+
+    if args.recipient:
+        recipients = args.recipient
+    elif 'to' in mail:
+        recipients = mail['to']
+    elif 'recipient' in mail:
+        recipients = mail['recipient']
+    else:
+        recipients = []
+
+    if args.cc:
+        cc = args.cc
+    elif 'cc' in mail:
+        cc = mail['cc']
+    else:
+        cc = []
+
+    if args.subject:
+        subject = args.subject
+    elif 'subject' in mail:
+        subject = mail['subject']
+    else:
+        subject = ''
+
+    return mailto(subject, recipients, cc, mail.content)
+
 def main():
     parser = create_parser()
     args = parser.parse_args()
@@ -90,45 +134,5 @@ def main():
         sources = ['-']
 
     for source in sources:
-        if source == '-':
-            source = sys.stdin
-        else:
-            source = open(source)
-
-        raw = bytes(source.read(), source.encoding)
-
-        if source != '-':
-            source.close()
-
-        mail = frontmatter.loads(raw)
-
-        if args.recipient:
-            recipients = args.recipient
-        elif 'to' in mail:
-            recipients = mail['to']
-        elif 'recipient' in mail:
-            recipients = mail['recipient']
-        else:
-            recipients = []
-
-        if not isinstance(recipients, (list,)):
-            recipients = [recipients]
-
-        if args.cc:
-            cc = args.cc
-        elif 'cc' in mail:
-            cc = mail['cc']
-        else:
-            cc = []
-
-        if not isinstance(cc, (list,)):
-            cc = [cc]
-
-        if args.subject:
-            subject = args.subject
-        elif 'subject' in mail:
-            subject = mail['subject']
-        else:
-            subject = ''
-
-        mailto(subject, recipients, cc, mail.content)
+        uri = run(source, args)
+        print(uri)
