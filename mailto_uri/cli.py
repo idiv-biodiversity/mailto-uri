@@ -28,30 +28,33 @@ def mailto(content, recipient, subject):
 
     print('mailto:{}?subject={}&body={}'.format(recipient, subject, content))
 
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description = 'converts an email template to a mailto URI',
+    )
+
+    parser.add_argument(
+        'input',
+        nargs = '*',
+        help = 'mail body input file, can include optional arguments in front '
+               'matter',
+    )
+
+    parser.add_argument(
+        '-r', '--recipient',
+        help = 'primary, main recipients',
+    )
+
+    parser.add_argument(
+        '-s', '--subject',
+        help = 'mail subject',
+    )
+
+    return parser
+
 def main():
-
-    # -------------------------------------------------------------------------
-    # command line arguments
-    # -------------------------------------------------------------------------
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('input',
-                        nargs = '*',
-                        help = 'mail body input file, can also include '
-                               'recipient and subject via front matter')
-
-    parser.add_argument('-r', '--recipient',
-                        help = 'mail recipient')
-
-    parser.add_argument('-s', '--subject',
-                        help = 'mail subject')
-
+    parser = create_parser()
     args = parser.parse_args()
-
-    # -------------------------------------------------------------------------
-    # app
-    # -------------------------------------------------------------------------
 
     if args.input:
         sources = args.input
